@@ -1,0 +1,5 @@
+timestamp,amount,category,Income/Expense
+01/01/2025,75.50,Food,expense
+01/01/2025,30.00,Transport,expense
+02/01/2025,200.00,Healthcare,expense
+02/01/2025,25.00,Entertainment,expense
