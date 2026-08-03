@@ -19,6 +19,17 @@ TOTAL_FUNDS = 3412
 CSV_FILE = "dummy_transactions.csv"
 
 # ---------- HELPER FUNCTIONS ----------
+CATEGORY_TO_BUCKET = {
+    "Food": "Emergency",
+    "Transportation": "Travel",
+    "Transport": "Travel",
+    "Entertainment": "Fun",
+    "subscription": "Fun",
+    "Festivals": "Fun",
+    "Healthcare": "Health",
+    "Health": "Health"
+}
+
 def round_down_10(x):
     return int(math.floor(x / 10.0)) * 10
 
@@ -29,23 +40,26 @@ def allocate_daily(transactions, user_priority=None):
         amt = tx["Amount"]
         cat = tx["Category"]
         percent = amt / TOTAL_FUNDS
+        
+        # Determine target bucket based on category mapping
+        mapped_bucket = CATEGORY_TO_BUCKET.get(cat, "Emergency")
 
         # Priority mode
         if user_priority and cat == user_priority:
             to_save = round_down_10(amt * 0.12)
             overflow = (amt * 0.12) - to_save
-            allocations[user_priority] += to_save
+            allocations[mapped_bucket] += to_save
             allocations["Emergency"] += overflow
             continue
 
         # Contextual logic
         if cat == "Food":
             allocations["Emergency"] += amt * 0.05
-        elif cat == "Entertainment":
+        elif cat in ["Entertainment", "subscription", "Festivals"]:
             allocations["Fun"] += amt * 0.05
-        elif cat == "Transport":
+        elif cat in ["Transportation", "Transport"]:
             allocations["Travel"] += amt * 0.05
-        elif cat == "Healthcare":
+        elif cat in ["Healthcare", "Health"]:
             if percent >= 0.10:
                 to_save = amt * 0.10
                 rounded = round_down_10(to_save)
@@ -70,6 +84,7 @@ try:
     df = df[df["Income/Expense"].str.lower() == "expense"]
     # Convert Date with dayfirst=True to handle DD/MM/YYYY
     df["Date"] = pd.to_datetime(df["Date"], dayfirst=True, errors="coerce").dt.date
+    df = df.dropna(subset=["Date"])
     transactions = df.to_dict(orient="records")
 except FileNotFoundError:
     console.print(f"[red]Error: {CSV_FILE} not found.[/red]")
@@ -97,8 +112,8 @@ category_spending = defaultdict(float)
 # ---------- MAIN LOGIC LOOP ----------
 PRIORITY_THRESHOLD = 200
 
-for day, txns in grouped_by_day.items():
-    console.print(f"\n📅 [bold cyan]{day}[/bold cyan]:")
+for day, txns in sorted(grouped_by_day.items()):
+    console.print(f"\n[Date: {day}]:")
     
     # Calculate total spent per category for the day
     category_totals = defaultdict(float)
@@ -124,7 +139,7 @@ for day, txns in grouped_by_day.items():
         savings_buckets[category] += allocations.get(category, 0)
 
     # Daily Summary
-    console.print("\n📊 [bold]Daily Summary[/bold]:")
+    console.print("\n[Daily Summary]:")
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Category", style="cyan")
     table.add_column("Amount", justify="right", style="green")
@@ -141,14 +156,14 @@ for day, txns in grouped_by_day.items():
             priority_category = category
 
     console.print(table)
-    console.print(f"[bold]→ Total Allocated Today:[/bold] [green]${daily_total:.2f}[/green]")
+    console.print(f"[bold]-> Total Allocated Today:[/bold] [green]${daily_total:.2f}[/green]")
     if priority_category and max_allocated > 0:
         percent = (max_allocated / daily_total) * 100
-        console.print(f"[bold]⭐ Priority of the Day:[/bold] [cyan]{priority_category}[/cyan] ([green]${max_allocated:.2f}[/green] – [yellow]{percent:.1f}%[/yellow])")
+        console.print(f"[bold]* Priority of the Day:[/bold] [cyan]{priority_category}[/cyan] ([green]${max_allocated:.2f}[/green] - [yellow]{percent:.1f}%[/yellow])")
     console.print("-" * 50)
 
 # ---------- WEEKLY SUMMARY ----------
-console.print("\n📈 [bold underline]Weekly Summary[/bold underline]:")
+console.print("\n[Weekly Summary]:")
 total_saved = sum(savings_buckets.values())
 most_spent_category = max(category_spending.items(), key=lambda x: x[1], default=("None", 0))[0]
 top_savings_bucket = max(savings_buckets.items(), key=lambda x: x[1], default=("None", 0))[0]
@@ -179,6 +194,6 @@ plt.title("AutoNest – Smart Savings Allocation")
 plt.legend(labels, loc="best")
 plt.axis("equal")
 plt.savefig("savings_allocation.png")
-plt.show()  # Added to display pie chart
+# plt.show()  # Added to display pie chart
 plt.close()
 console.print("\n[bold green]Pie chart saved as 'savings_allocation.png'[/bold green]")
