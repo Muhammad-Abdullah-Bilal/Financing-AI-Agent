@@ -50,23 +50,21 @@ def inject_custom_css():
     }
     .metric-card {
         flex: 1;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.06);
         border-radius: 16px;
         padding: 24px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
         transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     }
     .metric-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.25);
-        border-color: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.08);
+        border-color: rgba(0, 0, 0, 0.12);
     }
     .metric-title {
         font-size: 13px;
-        color: #8e8e93;
+        color: #71717a;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.8px;
@@ -74,18 +72,18 @@ def inject_custom_css():
     }
     .metric-value {
         font-size: 32px;
-        color: #ffffff;
+        color: #09090b;
         font-weight: 700;
         letter-spacing: -0.5px;
     }
     .metric-subtitle {
         font-size: 12px;
-        color: #10b981;
+        color: #059669;
         font-weight: 600;
         margin-top: 4px;
     }
     .metric-subtitle.negative {
-        color: #ef4444;
+        color: #dc2626;
     }
     .metric-subtitle.neutral {
         color: #71717a;
@@ -124,11 +122,12 @@ def inject_custom_css():
     
     /* Custom Progress Bar for Goals */
     .goal-card {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.06);
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
     }
     .goal-header {
         display: flex;
@@ -139,13 +138,14 @@ def inject_custom_css():
     .goal-title {
         font-weight: 600;
         font-size: 16px;
+        color: #09090b;
     }
     .goal-target {
         font-size: 14px;
-        color: #a1a1aa;
+        color: #71717a;
     }
     .goal-progress-container {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.06);
         border-radius: 8px;
         height: 10px;
         width: 100%;
